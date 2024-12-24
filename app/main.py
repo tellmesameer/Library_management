@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from . import models, schemas, crud
 from .database import engine, Base, get_db
-from fastapi.security import OAuth2PasswordRequestForm
 from .auth import (
     authenticate_user,
     create_access_token,
     get_active_user,
+    create_user
 )
 
 app = FastAPI()
@@ -16,27 +16,32 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 # Public Endpoints
-@app.get("/books/", response_model=List[schemas.Book])
-def search_books_endpoint(
-    title: Optional[str] = Query(None, description="Search by book title"),
-    author_name: Optional[str] = Query(None, description="Search by author name"),
-    db: Session = Depends(get_db)
-):
-    books = crud.search_books(db=db, title=title, author_name=author_name)
-    return books
+@app.post("/users/", response_model=schemas.UserResponse)
+def create_user_endpoint(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return create_user(db=db, user=user)
 
-@app.get("/authors/", response_model=List[schemas.Author])
-def read_authors(db: Session = Depends(get_db)):
-    return crud.get_authors(db=db)
-
-# Authentication Endpoint
 @app.post("/token")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
+def login(form_data: schemas.LoginRequest):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
-    access_token = create_access_token(data={"sub": user["username"]})
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/books/", response_model=schemas.PaginatedBooks)
+def get_books(
+    db: Session = Depends(get_db),
+    title: Optional[str] = Query(None),
+    author_name: Optional[str] = Query(None),
+    skip: int = 0,
+    limit: int = 10
+):
+    books = crud.search_books(db=db, title=title, author_name=author_name, skip=skip, limit=limit)
+    total = crud.get_books_count(db=db, title=title, author_name=author_name)
+    return {"books": books, "total": total}
 
 # Protected Endpoints
 @app.post("/books/", response_model=schemas.Book, dependencies=[Depends(get_active_user)])
