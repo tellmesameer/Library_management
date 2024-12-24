@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import jwt
 from passlib.context import CryptContext
-from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 from . import crud
-from .database import get_db
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"

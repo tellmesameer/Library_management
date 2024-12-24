@@ -1,7 +1,6 @@
 from typing import Optional
 from sqlalchemy.orm import Session
 from . import models, schemas
-from sqlalchemy import or_
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = schemas.get_password_hash(user.password)
