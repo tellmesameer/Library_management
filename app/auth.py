@@ -27,3 +27,16 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def get_active_user(db: Session, user_id: int):
+    # This could retrieve a user by their ID from the database and check if the user is active.
+    user = crud.get_user(db, user_id)
+    if user and user.is_active:
+        return user
+    return None
+
+def create_user(db: Session, username: str, password: str):
+    hashed_password = get_password_hash(password)
+    # Assuming you have a `User` model and `crud.create_user` function in your `crud.py`
+    user = crud.create_user(db, username=username, hashed_password=hashed_password)
+    return user

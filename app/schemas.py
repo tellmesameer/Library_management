@@ -1,7 +1,8 @@
 from datetime import date
-from pydantic import BaseModel
 from typing import Optional 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import List
+from . import Book  # Assuming you have a Book schema for individual books
 
 # Author Schemas
 class AuthorBase(BaseModel):
@@ -14,7 +15,6 @@ class AuthorBase(BaseModel):
         json_encoders = {
             date: lambda v: v.isoformat()  # Serialize date as ISO 8601 string
         }
-
 
 class AuthorCreate(AuthorBase):
     pass  # Inherits everything from AuthorBase
@@ -38,10 +38,8 @@ class BookBase(BaseModel):
     class Config:
         orm_mode = True  # Enable ORM mode for SQLAlchemy compatibility
 
-
 class BookCreate(BookBase):
     pass  # Inherits everything from BookBase
-
 
 class Book(BookBase):
     book_id: int  # Add book_id for response schema
@@ -49,6 +47,29 @@ class Book(BookBase):
     class Config:
         orm_mode = True  # Enable ORM mode for response models
 
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str  # Add other fields as needed
+
+    class Config:
+        orm_mode = True  # This allows SQLAlchemy models to be automatically converted to Pydantic models
 
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
+class PaginatedBooks(BaseModel):
+    total: int  # Total number of books in the database
+    page: int  # Current page number
+    per_page: int  # Number of books per page
+    books: List[Book]  # List of books on the current page
+
+    class Config:
+        orm_mode = True  # This allows SQLAlchemy models to be automatically converted to Pydantic models
