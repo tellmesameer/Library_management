@@ -41,7 +41,12 @@ def get_books(
 ):
     books = crud.search_books(db=db, title=title, author_name=author_name, skip=skip, limit=limit)
     total = crud.get_books_count(db=db, title=title, author_name=author_name)
-    return {"books": books, "total": total}
+    return schemas.PaginatedBooks(
+        total=total,
+        page=skip // limit + 1,  # Calculate the current page number
+        per_page=limit,
+        books=books
+    )
 
 # Protected Endpoints
 @app.post("/books/", response_model=schemas.Book, dependencies=[Depends(get_active_user)])

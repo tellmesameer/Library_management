@@ -1,8 +1,7 @@
 from datetime import date
-from typing import Optional 
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 from typing import List
-from . import Book  # Assuming you have a Book schema for individual books
 
 # Author Schemas
 class AuthorBase(BaseModel):
@@ -46,6 +45,7 @@ class Book(BookBase):
 
     class Config:
         orm_mode = True  # Enable ORM mode for response models
+
 
 class UserCreate(BaseModel):
     username: str

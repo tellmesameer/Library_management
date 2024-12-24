@@ -23,10 +23,12 @@ def create_book(db: Session, book: schemas.BookCreate):
     db.refresh(db_book)
     return db_book
 
-def search_books(db: Session, title: Optional[str] = None, author_name: Optional[str] = None):
+def search_books(db: Session, title: Optional[str] = None, author_name: Optional[str] = None, skip: int = 0, limit: int = 10):
     query = db.query(models.Book).join(models.Author)
     if title:
         query = query.filter(models.Book.title.ilike(f"%{title}%"))
     if author_name:
         query = query.filter(models.Author.author_name.ilike(f"%{author_name}%"))
-    return query.all()
+    books = query.offset(skip).limit(limit).all()
+    return [schemas.Book.from_orm(book) for book in books]  # Convert to Pydantic model list
+
