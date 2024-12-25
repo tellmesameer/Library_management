@@ -48,6 +48,32 @@ def get_books(
         books=books
     )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Ensure books are Pydantic models
+    return schemas.PaginatedBooks(
+        total=total,
+        page=skip // limit + 1,  # Calculate the current page number
+        per_page=limit,
+        books=[schemas.Book.from_orm(book) for book in books]  # Convert to Pydantic Book models
+    )
+
 # Protected Endpoints
 @app.post("/books/", response_model=schemas.Book, dependencies=[Depends(get_active_user)])
 def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):

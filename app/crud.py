@@ -30,5 +30,4 @@ def search_books(db: Session, title: Optional[str] = None, author_name: Optional
     if author_name:
         query = query.filter(models.Author.author_name.ilike(f"%{author_name}%"))
     books = query.offset(skip).limit(limit).all()
-    return [schemas.Book.from_orm(book) for book in books]  # Convert to Pydantic model list
-
+    return [schemas.Book.from_orm(book) for book in books]  # Ensure Pydantic models are returned
