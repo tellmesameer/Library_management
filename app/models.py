@@ -10,6 +10,7 @@ class Author(Base):
     bio = Column(String, nullable=True)
     date_of_birth = Column(Date, nullable=True)
 
+
 class Book(Base):
     __tablename__ = "books"
     book_id = Column(Integer, primary_key=True, index=True)
@@ -19,3 +20,11 @@ class Book(Base):
     published_year = Column(Integer, nullable=True)
     genre = Column(String(50), nullable=True)
     author = relationship("Author")
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)

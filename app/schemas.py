@@ -10,7 +10,7 @@ class AuthorBase(BaseModel):
     date_of_birth: Optional[date] = None  # Use date type for proper validation and serialization
 
     class Config:
-        orm_mode = True  # Enable ORM mode for SQLAlchemy compatibility
+        from_attributes = True  # Use from_attributes instead of orm_mode
         json_encoders = {
             date: lambda v: v.isoformat()  # Serialize date as ISO 8601 string
         }
@@ -23,7 +23,7 @@ class Author(AuthorBase):
     author_id: int  # Add author_id for response schema
 
     class Config:
-        orm_mode = True  # Enable ORM mode for response models
+        from_attributes = True  # Use from_attributes instead of orm_mode
 
 
 # Book Schemas
@@ -35,7 +35,7 @@ class BookBase(BaseModel):
     genre: Optional[str] = None
 
     class Config:
-        orm_mode = True  # Enable ORM mode for SQLAlchemy compatibility
+        from_attributes = True  # Use from_attributes instead of orm_mode
 
 class BookCreate(BookBase):
     pass  # Inherits everything from BookBase
@@ -44,12 +44,11 @@ class Book(BookBase):
     book_id: int  # Add book_id for response schema
 
     class Config:
-        orm_mode = True  # Enable ORM mode for response models
-
+        from_attributes = True  # Use from_attributes instead of orm_mode
 
 class UserCreate(BaseModel):
     username: str
-    email: EmailStr
+    email: str
     password: str
 
 class UserResponse(BaseModel):
@@ -58,7 +57,7 @@ class UserResponse(BaseModel):
     email: str  # Add other fields as needed
 
     class Config:
-        orm_mode = True  # This allows SQLAlchemy models to be automatically converted to Pydantic models
+        from_attributes = True  # This allows SQLAlchemy models to be automatically converted to Pydantic models
 
 
 class LoginRequest(BaseModel):
@@ -72,4 +71,4 @@ class PaginatedBooks(BaseModel):
     books: List[Book]  # List of books on the current page
 
     class Config:
-        orm_mode = True  # This allows SQLAlchemy models to be automatically converted to Pydantic models
+        from_attributes = True  # This allows SQLAlchemy models to be automatically converted to Pydantic models
