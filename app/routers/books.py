@@ -1,3 +1,5 @@
+# app/routers/books.py
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -8,10 +10,8 @@ from ..auth import get_current_user
 router = APIRouter(
     prefix="/books",
     tags=["Books"],
-    dependencies=[Depends(get_current_user)],
-    responses={404: {"description": "Not found"}},
+    dependencies=[Depends(get_current_user)],  # Use Bearer Token for all routes
 )
-
 @router.post("/", response_model=schemas.Book)
 def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
     return crud.create_book(db, book)
