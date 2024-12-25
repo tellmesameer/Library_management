@@ -7,7 +7,7 @@ class Author(Base):
     __tablename__ = "author"
     author_id = Column(Integer, primary_key=True, index=True)
     author_name = Column(String(255), nullable=False)
-    bio = Column(String, nullable=True)
+    bio = Column(String(1000), nullable=True)
     date_of_birth = Column(Date, nullable=True)
 
 
@@ -26,5 +26,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    username = Column(String(50), unique=True, index=True)
+    email = Column(String(255), unique=True, index=True)
+    hashed_password = Column(String(255))
